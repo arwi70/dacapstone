@@ -26,7 +26,6 @@ def load_telco():
             return "> 5 Year"
         
     telco["tenure_group"] = telco.apply(lambda telco: grouping_tenure(telco), axis = 1) 
-    
     # Adjust category order
     tenure_group = ["< 1 Year", "1-2 Year", "2-4 Year", "4-5 Year", "> 5 Year"]
     telco["tenure_group"] = pd.Categorical(telco["tenure_group"], categories = tenure_group, ordered=True)
@@ -41,14 +40,27 @@ def load_telco():
             return "70.35 - 89.85"
         elif (telco["monthly_charges"] > 89.85) :
             return "> 89.85"
-        else:
-            return "unknown"
 
     telco["monthly_charges_group"] = telco.apply(lambda telco: grouping_monthly_charges(telco), axis = 1) 
-
     # Adjust category order
-    monthly_charges_group = ["< 35.5", "35.5 - 70.35", "70.35 - 89.85", "> 89.85", 'unknown']
+    monthly_charges_group = ["< 35.5", "35.5 - 70.35", "70.35 - 89.85", "> 89.85"]
     telco["monthly_charges_group"] = pd.Categorical(telco["monthly_charges_group"], categories = monthly_charges_group, ordered=True)
+    
+    # Total charges to grouping categories
+    def grouping_total_charges(telco) :
+        if telco["total_charges"] <= 401.45 :
+            return "< 401.45"
+        elif (telco["total_charges"] > 401.45) & (telco["total_charges"] <= 1397.475 ):
+            return "401.45 - 1397.48"
+        elif (telco["total_charges"] > 1397.475) & (telco["total_charges"] <= 3794.7375) :
+            return "1397.48 - 3794.74"
+        elif (telco["total_charges"] > 3794.7375) :
+            return "> 3794.74"
+
+    telco["total_charges_group"] = telco.apply(lambda telco: grouping_total_charges(telco), axis = 1) 
+    # Adjust category order
+    total_charges_group = ["< 401.45", "401.45 - 1397.48", "1397.48 - 3794.74", "> 3794.74"]
+    telco["total_charges_group"] = pd.Categorical(telco["total_charges_group"], categories = total_charges_group, ordered=True)
     
     return(telco)
 	
@@ -146,29 +158,6 @@ def plot_tenure_cltv(data):
 
     return(result)
 
-def plot_contract_churn(data):
-    
-    # ---- Churn Rate by Contract
-    contract = (pd.crosstab(data['tenure_group'], data['churn_label'], normalize=True)*100).round(2)
-
-    ax = contract.plot(kind = 'bar', color=['#53a4b1','#c34454'], figsize=(8, 6))
-
-    # Plot Configuration
-    ax.yaxis.set_major_formatter(mtick.PercentFormatter())
-    plt.axes().get_xaxis().set_label_text('')
-    plt.xticks(rotation = 360)
-    plt.legend(['Retain', 'Churn'],fancybox=True,shadow=True)
-    plt.title('Churn Rate by Contract')
-
-    # Save png file to IO buffer
-    figfile = BytesIO()
-    plt.savefig(figfile, format='png')
-    figfile.seek(0)
-    figdata_png = base64.b64encode(figfile.getvalue())
-    result = str(figdata_png)[2:-1]
-
-    return(result)
-
 def plot_monthly_charges_churn(data):
     
     # ---- Churn Rate by Monthly Charges Group
@@ -183,6 +172,30 @@ def plot_monthly_charges_churn(data):
     plt.xticks(rotation = 360)
     plt.legend(['Retain', 'Churn'],fancybox=True,shadow=True)
     plt.title('Churn Rate by Monthly Charges Group')
+
+    # Save png file to IO buffer
+    figfile = BytesIO()
+    plt.savefig(figfile, format='png')
+    figfile.seek(0)
+    figdata_png = base64.b64encode(figfile.getvalue())
+    result = str(figdata_png)[2:-1]
+
+    return(result)
+
+def plot_total_charges_churn(data):
+    
+    # ---- Churn Rate by Total Charges Group
+    total_charge = pd.crosstab(data['monthly_charges_group'], data['churn_label'], normalize=True)*100
+
+    ax = total_charge.plot(kind = 'bar', color=['#53a4b1','#c34454'], figsize=(8, 6))
+
+    # Plot Configuration
+    ax.yaxis.set_major_formatter(mtick.PercentFormatter())
+    plt.axes().get_xaxis().set_label_text('')
+    plt.xlabel('Total Charge')
+    plt.xticks(rotation = 360)
+    plt.legend(['Retain', 'Churn'],fancybox=True,shadow=True)
+    plt.title('Churn Rate by Total Charges Group')
 
     # Save png file to IO buffer
     figfile = BytesIO()

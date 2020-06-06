@@ -78,7 +78,7 @@
 					</button>
 					<button class="tablinks" onclick="openTab(event, 'subscription')">Subscription Service
 					</button>
-					<button class="tablinks" onclick="openTab(event, 'Own')">Monthly Charges
+					<button class="tablinks" onclick="openTab(event, 'Own')">Charge Amount
 					</button>
 				</div>
 			</div>
@@ -115,13 +115,16 @@
 				<div id="Own" class="tabcontent">
 				  <!-- Define your own analysis -->
 				  <br>
-				  <h3 style="color: #333333;text-align:center">Churned Customer by Monthly Charges Group</h3>
+				  <h3 style="color: #333333;text-align:center">Churned Customer by Charges Amount Group</h3>
 				  <div class="img-container">
-					  {% if funded_plot != None %}
-					<img src="data:image/png;base64,{{ plot_charges_res }}" style="width:70%;">
-					  {% endif %}  
-				  </div>
+					{% if funded_plot != None %}
+				  <img src="data:image/png;base64,{{ plot_month_charges_res }}" style="width:46.5%;">
+					{% endif %}
+					{% if funded_plot != None %}
+				  <img src="data:image/png;base64,{{ plot_total_charges_res }}" style="width:46.5%;">
+					{% endif %}  
 				</div>
+			  </div>
 
 			</div>
 		</div>

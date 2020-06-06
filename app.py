@@ -10,7 +10,7 @@ matplotlib.use('Agg')
 
 
 from helper import load_telco, table_churn, plot_phone, plot_internet, plot_tenure_churn, plot_tenure_cltv
-from helper import plot_monthly_charges_churn
+from helper import plot_monthly_charges_churn, plot_total_charges_churn
 
 app = Flask(__name__)
 
@@ -41,7 +41,8 @@ def index():
 	plot_tenure_cltv_res = plot_tenure_cltv(raw)
 	plot_tenure_churn_res = plot_tenure_churn(raw)
 
-	plot_charges_res = plot_monthly_charges_churn(raw)
+	plot_month_charges_res = plot_monthly_charges_churn(raw)
+	plot_total_charges_res = plot_total_charges_churn(raw)
 
 	# render to html
 	return render_template('index.html',
@@ -50,7 +51,8 @@ def index():
 		   plot_internet_res=plot_internet_res,
 		   plot_tenure_cltv_res=plot_tenure_cltv_res,
 		   plot_tenure_churn_res=plot_tenure_churn_res,
-		   plot_charges_res=plot_charges_res
+		   plot_month_charges_res=plot_month_charges_res,
+		   plot_total_charges_res=plot_total_charges_res
 		)
 
 
